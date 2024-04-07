@@ -9,8 +9,8 @@
     "expose": "ngrok http 7577 --domain=annually-powerful-grackle.ngrok-free.app",
     "start": "node dist/index.js",
     "prod:login": "ssh root@37.27.30.64",
-    "prod:start": "cd whisper-server && docker run --rm -it -p 3000:3000 -e PORT=3000 $(docker build -q .)",
-    "prod:setup": "git clone https://github.com/ovieokeh/whisper-server.git && npm run prod:start"
+    "prod:start": "docker run --rm -it -p 3000:3000 -e PORT=3000 $(docker build -q .)",
+    "prod:setup": "git clone https://github.com/ovieokeh/whisper-server.git && cd whisper-server && npm run prod:start"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
