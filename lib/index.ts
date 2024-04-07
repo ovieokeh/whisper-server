@@ -42,8 +42,6 @@ function onListening() {
   console.info("Listening on " + bind);
 }
 
-const FLY_INSTANCE_ID = process.env.FLY_ALLOC_ID ? process.env.FLY_ALLOC_ID.split("-")[0] : null;
-
 const WHITELISTED_ORIGINS = ["http://localhost:8000", "http://localhost:8001", "https://insightbud.fly.dev"];
 
 const port = normalizePort(process.env.PORT || "8000");
