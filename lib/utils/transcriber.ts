@@ -14,7 +14,7 @@ export const localTranscribeAudioBuffer = async ({
   data: any;
   io: Server;
 }) => {
-  const modelPath = path.join("whisper/models/ggml-base.bin");
+  const modelPath = path.join("whisper/models/ggml-base-q5_0.bin");
   const whisperPath = path.join("whisper/main");
   const tempDir = path.join("whisper-data");
   const tempAudioPath = path.join(tempDir, `${data.id}.wav`);

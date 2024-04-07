@@ -24,7 +24,7 @@ WORKDIR /usr/local/src/whisper.cpp
 RUN bash ./models/download-ggml-model.sh base
 
 # build whisper.cpp base model using examples/main Makefile
-RUN make
+RUN make quantize ./quantize models/ggml-base.bin models/ggml-base-q5_0.bin q5_0
 
 # Node.js application setup
 WORKDIR /app
@@ -55,8 +55,6 @@ ENV NODE_ENV=production
 
 # Expose the port used by the Node.js app
 EXPOSE 3000
-EXPOSE 443
-EXPOSE 80
 
 # Define the command to run (depends on the primary service you want to run)
 CMD [ "npm", "run", "start" ]
