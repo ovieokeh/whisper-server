@@ -21,7 +21,7 @@ WORKDIR /usr/local/src
 RUN git clone https://github.com/ggerganov/whisper.cpp.git
 
 WORKDIR /usr/local/src/whisper.cpp
-RUN bash ./models/download-ggml-model.sh small
+RUN bash ./models/download-ggml-model.sh large-v3
 RUN make
 
 # Node.js application setup
