@@ -1,6 +1,5 @@
 import path from "path";
-import { tmpdir } from "os";
-import { writeFile } from "fs";
+import { unlink, writeFile } from "fs";
 import { spawn } from "child_process";
 import { Server } from "socket.io";
 import ffmpeg from "fluent-ffmpeg";
@@ -15,10 +14,10 @@ export const localTranscribeAudioBuffer = async ({
   data: any;
   io: Server;
 }) => {
-  const modelPath = path.join("whisper/models/ggml-medium.bin");
+  const modelPath = path.join("whisper/models/ggml-base.bin");
   const whisperPath = path.join("whisper/main");
-  const tempFilePath = path.join(tmpdir(), `${data.id}.wav`);
-  const tempOutputPath = path.join(tmpdir(), `${data.id}-transcribed.wav`);
+  const tempFilePath = path.join("data", `${data.id}.wav`);
+  const tempOutputPath = path.join("data", `${data.id}-transcribed.wav`);
 
   writeFile(tempFilePath, Buffer.from(audioBuffer), (error) => {
     if (error) {
@@ -61,12 +60,12 @@ export const localTranscribeAudioBuffer = async ({
             message: transcription,
           });
 
-          // unlink(tempFilePath, (error) => {
-          //   if (error) console.error("Error deleting temp file:", error);
-          // });
-          // unlink(tempOutputPath, (error) => {
-          //   if (error) console.error("Error deleting temp output file:", error);
-          // });
+          unlink(tempFilePath, (error) => {
+            if (error) console.error("Error deleting temp file:", error);
+          });
+          unlink(tempOutputPath, (error) => {
+            if (error) console.error("Error deleting temp output file:", error);
+          });
         });
       });
   });
