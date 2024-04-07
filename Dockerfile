@@ -55,6 +55,8 @@ ENV NODE_ENV=production
 
 # Expose the port used by the Node.js app
 EXPOSE 3000
+EXPOSE 443
+EXPOSE 80
 
 # Define the command to run (depends on the primary service you want to run)
 CMD [ "npm", "run", "start" ]
