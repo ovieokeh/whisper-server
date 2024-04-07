@@ -1,0 +1,8 @@
+node_modules
+dist
+data
+.env
+hetzner
+hetzner.pub
+y
+y.pub
