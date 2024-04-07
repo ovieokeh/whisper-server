@@ -16,8 +16,8 @@ export const localTranscribeAudioBuffer = async ({
 }) => {
   const modelPath = path.join("whisper/models/ggml-base.bin");
   const whisperPath = path.join("whisper/main");
-  const tempFilePath = path.join("data", `${data.id}.wav`);
-  const tempOutputPath = path.join("data", `${data.id}-transcribed.wav`);
+  const tempFilePath = path.join("whisper-data", `${data.id}.wav`);
+  const tempOutputPath = path.join("whisper-data", `${data.id}-transcribed.wav`);
 
   writeFile(tempFilePath, Buffer.from(audioBuffer), (error) => {
     if (error) {

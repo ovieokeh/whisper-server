@@ -7,7 +7,10 @@
     "deploy": "fly scale count 1 -y && fly deploy --ha=false",
     "dev": "bun run --watch lib/index.ts",
     "expose": "ngrok http 7577 --domain=annually-powerful-grackle.ngrok-free.app",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "prod:login": "ssh root@37.27.85.74",
+    "prod:start": "cd whisper-server && docker-compose up -d && ",
+    "prod:setup": "npm run prod:login && git clone https://github.com/ovieokeh/whisper-server.git && cd whisper-server && docker build ."
   },
   "dependencies": {
     "body-parser": "^1.20.2",

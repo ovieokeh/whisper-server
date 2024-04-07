@@ -48,13 +48,13 @@ RUN npm prune --omit=dev
 # Copy whisper.cpp to the app/whisper folder
 RUN cp -r /usr/local/src/whisper.cpp whisper
 
+RUN mkdir whisper/data
+
 # Set environment to production
 ENV NODE_ENV=production
 
 # Expose the port used by the Node.js app
 EXPOSE 3000
-EXPOSE 80
-EXPOSE 443
 
 # Define the command to run (depends on the primary service you want to run)
 CMD [ "npm", "run", "start" ]
