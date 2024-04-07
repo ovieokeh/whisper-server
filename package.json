@@ -10,7 +10,7 @@
     "start": "node dist/index.js",
     "prod:login": "ssh root@37.27.85.74",
     "prod:start": "cd whisper-server && docker-compose up -d && ",
-    "prod:setup": "npm run prod:login && git clone https://github.com/ovieokeh/whisper-server.git && cd whisper-server && docker build ."
+    "prod:setup": "git clone https://github.com/ovieokeh/whisper-server.git && cd whisper-server && docker build ."
   },
   "dependencies": {
     "body-parser": "^1.20.2",

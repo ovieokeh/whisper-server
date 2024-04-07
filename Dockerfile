@@ -48,7 +48,7 @@ RUN npm prune --omit=dev
 # Copy whisper.cpp to the app/whisper folder
 RUN cp -r /usr/local/src/whisper.cpp whisper
 
-RUN mkdir whisper/data
+RUN mkdir whisper-data
 
 # Set environment to production
 ENV NODE_ENV=production
