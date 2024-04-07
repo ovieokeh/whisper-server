@@ -18,7 +18,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # whisper.cpp setup
 WORKDIR /usr/local/src
-RUN git clone https://github.com/ggerganov/whisper.cpp.git -b v1.4.0 --depth 1
+RUN git clone https://github.com/ggerganov/whisper.cpp.git -b v1.5.4 --depth 1
 
 WORKDIR /usr/local/src/whisper.cpp
 RUN bash ./models/download-ggml-model.sh base
