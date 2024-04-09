@@ -13,7 +13,7 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-rec
 WORKDIR /app/whisper_model
 RUN git clone https://github.com/ggerganov/whisper.cpp.git .
 
-RUN bash ./models/download-ggml-model.sh medium
+RUN bash ./models/download-ggml-model.sh base
 RUN make
 # RUN WHISPER_CUDA=1 make -j
 

@@ -5,7 +5,7 @@ import { existsSync, unlink, writeFile } from "fs";
 import { TranscriptionJob } from "./types";
 
 export const localTranscribeAudioBuffer = async ({ audioBuffer, data, io }: TranscriptionJob) => {
-  const model = process.env.ENV === "development" ? "ggml-base-q5_0.bin" : "ggml-medium.bin";
+  const model = process.env.ENV === "development" ? "ggml-base-q5_0.bin" : "ggml-base.bin";
   const modelPath = path.join(`whisper_model/models/${model}`);
   const whisperPath = path.join("whisper_model/main");
   const tempDir = path.join("whisper_data");
@@ -53,7 +53,7 @@ export const localTranscribeAudioBuffer = async ({ audioBuffer, data, io }: Tran
       console.log("Transcription:>>>>>>", transcription);
       if (!transcription || transcription.includes("output: tmp/")) return;
 
-      io.emit("audio-message", {
+      io.emit("audio-transcription-end", {
         ...data,
         message: transcription,
       });

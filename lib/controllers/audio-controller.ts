@@ -25,6 +25,12 @@ const processAudio = async ({ id, audioBuffer, data, io }: TranscriptionJob) => 
       return;
     }
 
+    io.emit("audio-transcription-start", {
+      ...data,
+      id,
+      message: "Transcribing...",
+    });
+
     localTranscribeAudioBuffer({
       id,
       audioBuffer,

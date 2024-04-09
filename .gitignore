@@ -1,5 +1,6 @@
 node_modules
 dist
+whisper_model
 whisper_data
 ignore
 .env
