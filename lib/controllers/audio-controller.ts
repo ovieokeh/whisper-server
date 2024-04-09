@@ -31,7 +31,7 @@ const processAudio = async ({ id, audioBuffer, data, io }: TranscriptionJob) => 
       message: "Transcribing...",
     });
 
-    localTranscribeAudioBuffer({
+    await localTranscribeAudioBuffer({
       id,
       audioBuffer,
       data,
