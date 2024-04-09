@@ -1,23 +1,14 @@
 import path from "path";
 import { spawn } from "child_process";
-import { Server } from "socket.io";
 import ffmpeg from "fluent-ffmpeg";
 import { existsSync, unlink, writeFile } from "fs";
+import { TranscriptionJob } from "./types";
 
-export const localTranscribeAudioBuffer = async ({
-  audioBuffer,
-  data,
-  io,
-}: {
-  id: string;
-  audioBuffer: ArrayBuffer;
-  data: any;
-  io: Server;
-}) => {
-  const model = process.env.ENV === "development" ? "ggml-base-q5_0.bin" : "ggml-base.bin";
-  const modelPath = path.join(`whisper/models/${model}`);
-  const whisperPath = path.join("whisper/main");
-  const tempDir = path.join("whisper-data");
+export const localTranscribeAudioBuffer = async ({ audioBuffer, data, io }: TranscriptionJob) => {
+  const model = process.env.ENV === "development" ? "ggml-base-q5_0.bin" : "ggml-medium.bin";
+  const modelPath = path.join(`whisper_model/models/${model}`);
+  const whisperPath = path.join("whisper_model/main");
+  const tempDir = path.join("whisper_data");
   const tempAudioPath = path.join(tempDir, `${data.id}.wav`);
 
   writeFile(tempAudioPath, Buffer.from(audioBuffer), (error) => {

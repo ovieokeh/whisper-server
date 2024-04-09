@@ -2,7 +2,8 @@
 **/node_modules
 **/dist
 **/.env
-**/whisper-data
+**/whisper_model
+**/whisper_data
 
 # flyctl launch added from whisper/.gitignore
 whisper

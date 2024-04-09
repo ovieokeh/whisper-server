@@ -14,3 +14,10 @@ export interface AudioProcessorType {
   timestamp: string;
   io: Server;
 }
+
+export interface TranscriptionJob {
+  id: string;
+  audioBuffer: ArrayBuffer;
+  data: CustomAudioChunk;
+  io: Server;
+}

@@ -1,6 +1,7 @@
 node_modules
 dist
-whisper-data
+whisper_data
+ignore
 .env
 hetzner
 hetzner.pub

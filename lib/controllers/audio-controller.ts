@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 
 import { localTranscribeAudioBuffer } from "../utils/transcriber";
 import { concatArrayBuffers, extractWavHeader, getAudioDuration } from "../utils/audio-utils";
-import { CustomAudioChunk, AudioProcessorType } from "../utils/types";
+import { CustomAudioChunk, AudioProcessorType, TranscriptionJob } from "../utils/types";
 
 const TRANSCRIPTION_JOBS: {
   [id: string]: {
@@ -14,17 +14,7 @@ const TRANSCRIPTIONS_HANDLED: {
   [key: string]: boolean;
 } = {};
 
-const processAudio = async ({
-  id,
-  audioBuffer,
-  data,
-  io,
-}: {
-  id: string;
-  audioBuffer: ArrayBuffer;
-  data: CustomAudioChunk;
-  io: Server;
-}) => {
+const processAudio = async ({ id, audioBuffer, data, io }: TranscriptionJob) => {
   try {
     console.info("processAudio > processing", id);
 
