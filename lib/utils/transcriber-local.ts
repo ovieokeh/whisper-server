@@ -35,6 +35,11 @@ function canSpawnNewJob(): boolean {
   const requiredDevMemory = 500 * 1024 * 1024;
   const requiredProdMemory = 4 * 1024 * 1024 * 1024;
 
+  console.log({
+    freeMemory,
+    requiredMemory: process.env.ENV === "development" ? requiredDevMemory : requiredProdMemory,
+  });
+
   const requiredMemory = process.env.ENV === "development" ? requiredDevMemory : requiredProdMemory;
   return freeMemory > requiredMemory;
 }
@@ -45,28 +50,34 @@ async function processTranscriptionQueue() {
   while (!transcriptionJobsQueue.isEmpty && canSpawnNewJob()) {
     const job = transcriptionJobsQueue.dequeue();
     if (job) {
-      await localTranscribeAudioBuffer(job);
+      await localTranscriber(job);
     }
   }
 }
 
-export const localTranscribeAudioBuffer = async (job: TranscriptionJob) => {
+export const localTranscriber = async (job: TranscriptionJob) => {
   console.log("Processing transcription...");
 
   await processAudio(job);
   processTranscriptionQueue();
 };
 
-export const processAudio = async ({ audioBuffer, data, io }: TranscriptionJob) => {
-  const model = process.env.ENV === "development" ? "ggml-base-q5_0.bin" : "ggml-large-v3.bin";
+const processAudio = async (job: TranscriptionJob) => {
+  const { id, buffer, io } = job;
+  if (!buffer || !io) {
+    return;
+  }
+
+  const model = process.env.ENV === "development" ? "ggml-base-q5_0.bin" : "ggml-large-v3-q5.bin";
   const modelPath = path.join(`whisper_model/models/${model}`);
-  const whisperPath = path.join("whisper_model/main");
+  const whisperPath =
+    process.env.ENV === "development" ? path.join("whisper_model/main") : path.join("whisper_model/quantized-main");
   const tempDir = path.join("whisper_data");
-  const tempAudioPath = path.join(tempDir, `${data.id}.wav`);
-  const tempFfmpegOutputPath = path.join(tempDir, `${data.id}_ffmpeg.wav`);
+  const tempAudioPath = path.join(tempDir, `${id}.wav`);
+  const tempFfmpegOutputPath = path.join(tempDir, `${id}_ffmpeg.wav`);
 
   try {
-    writeFileSync(tempAudioPath, Buffer.from(audioBuffer));
+    writeFileSync(tempAudioPath, Buffer.from(buffer));
   } catch (error) {
     if (error) return console.error("Error writing audio buffer to file:", error);
   }
@@ -109,7 +120,7 @@ export const processAudio = async ({ audioBuffer, data, io }: TranscriptionJob) 
           if (!transcription || transcription.includes("output: tmp/")) return;
 
           io.emit("audio-transcription-end", {
-            ...data,
+            ...job,
             message: transcription,
           });
 

@@ -6,7 +6,7 @@ import { config } from "dotenv";
 import cors from "cors";
 import { Server } from "socket.io";
 
-import { batchTranscriptionJob } from "./controllers/audio-controller";
+import { processAudioJob } from "./controllers/audio-controller";
 import { CustomAudioChunk } from "./utils/types";
 
 config();
@@ -72,8 +72,8 @@ io.on("connection", (socket) => {
 
   socket.on("audio-chunk", async (data: CustomAudioChunk) => {
     console.info("audio-chunk received", data.id);
-    await batchTranscriptionJob({
-      data,
+    await processAudioJob({
+      ...data,
       io,
     });
   });

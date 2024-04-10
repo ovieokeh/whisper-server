@@ -1,8 +1,6 @@
-import { Server } from "socket.io";
-
-import { localTranscribeAudioBuffer } from "../utils/transcriber";
+import { whisperTranscriber } from "../utils/transcriber-whisper";
 import { concatArrayBuffers, extractWavHeader, getAudioDuration } from "../utils/audio-utils";
-import { CustomAudioChunk, AudioProcessorType, TranscriptionJob } from "../utils/types";
+import { TranscriptionJob } from "../utils/types";
 
 const TRANSCRIPTION_JOBS: {
   [id: string]: {
@@ -14,44 +12,38 @@ const TRANSCRIPTIONS_HANDLED: {
   [key: string]: boolean;
 } = {};
 
-const processAudio = async ({ id, audioBuffer, data, io }: TranscriptionJob) => {
-  try {
-    console.info("processAudio > processing", id);
+const transcribeAudio = async (job: TranscriptionJob) => {
+  const { id, buffer, io } = job;
+  if (!buffer || !io) {
+    console.error("transcribeAudio > no buffer", id);
+    return;
+  }
 
-    const audioDuration = getAudioDuration(audioBuffer, 16000);
-    console.info("processAudio > audio duration", audioDuration);
+  try {
+    console.info("transcribeAudio > processing", id);
+
+    const audioDuration = getAudioDuration(buffer, 16000);
+    console.info("transcribeAudio > audio duration", audioDuration);
     if (audioDuration < 70) {
-      console.info("processAudio > silent chunk > exiting", id);
+      console.info("transcribeAudio > silent chunk > exiting", id);
       return;
     }
 
     io.emit("audio-transcription-start", {
-      ...data,
-      id,
-      message: "Transcribing...",
+      ...job,
+      buffer: null,
+      io: null,
     });
 
-    await localTranscribeAudioBuffer({
-      id,
-      audioBuffer,
-      data,
-      io,
-    });
+    await whisperTranscriber(job);
   } catch (error) {
-    console.error("processAudio > error", error);
+    console.error("transcribeAudio > error", error);
   }
 };
 
-const processArrayBufferChunk = ({
-  id,
-  buffer,
-  data,
-  isLastChunk,
-  timestamp,
-  io,
-}: AudioProcessorType & {
-  buffer: ArrayBuffer;
-}) => {
+export const processAudioJob = (job: TranscriptionJob) => {
+  const { timestamp, id, buffer, isLastChunk } = job;
+
   if (isLastChunk) {
     if (!buffer) {
       console.error("batchTranscriptionJob > last chunk > no buffer", id);
@@ -63,12 +55,12 @@ const processArrayBufferChunk = ({
       delete TRANSCRIPTION_JOBS[id];
     }
 
-    return processAudio({
-      id,
-      audioBuffer: buffer,
-      data,
-      io,
-    });
+    return transcribeAudio(job);
+  }
+
+  if (!buffer) {
+    console.info("batchTranscriptionJob > silent chunk > no buffer", id);
+    return;
   }
 
   const batchedAudio = TRANSCRIPTION_JOBS[id];
@@ -86,39 +78,11 @@ const processArrayBufferChunk = ({
 
   console.info("batchTranscriptionJob > silent chunk > buffer found > processing audio", id);
 
-  processAudio({
-    id,
-    audioBuffer: currentCustomAudioBuffer,
-    data,
-    io,
+  transcribeAudio({
+    ...job,
+    buffer: currentCustomAudioBuffer,
   });
 
   TRANSCRIPTIONS_HANDLED[timestamp] = true;
   return;
 };
-
-export async function batchTranscriptionJob({ data, io }: { data: CustomAudioChunk; io: Server }) {
-  const { timestamp, id, buffer, isLastChunk } = data;
-  try {
-    if (timestamp && TRANSCRIPTIONS_HANDLED[timestamp]) {
-      console.info("batchTranscriptionJob > duplicate chunk > exiting", timestamp);
-      return;
-    }
-
-    if (!buffer) {
-      console.error("batchTranscriptionJob > no buffer", id);
-      return;
-    }
-
-    processArrayBufferChunk({
-      id,
-      buffer: buffer,
-      data,
-      isLastChunk,
-      timestamp,
-      io,
-    });
-  } catch (error) {
-    console.error("batchTranscriptionJob > error", error);
-  }
-}

@@ -32,7 +32,11 @@ export function isSilenceDetected(wavData: ArrayBuffer, silenceThreshold: number
   }
 }
 
-export function concatArrayBuffers(views: ArrayBuffer[]): ArrayBuffer {
+export function concatArrayBuffers(views?: ArrayBuffer[]): ArrayBuffer {
+  if (!views || views.length === 0) {
+    return new ArrayBuffer(0);
+  }
+
   let totalLength = 0;
   for (const view of views) {
     if (!view) continue;

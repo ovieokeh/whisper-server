@@ -13,8 +13,8 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-rec
 WORKDIR /app/whisper_model
 RUN git clone https://github.com/ggerganov/whisper.cpp.git .
 
-RUN bash ./models/download-ggml-model.sh large-v3
-RUN make
+# RUN bash ./models/download-ggml-model.sh large-v3
+# RUN make
 # RUN WHISPER_CUDA=1 make -j
 
 # Install Node and NPM
